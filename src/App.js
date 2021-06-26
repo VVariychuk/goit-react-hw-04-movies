@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { Suspense, lazy} from 'react';
+import {BrowserRouter as Router, Route, Switch, NavLink } from 'react-router-dom';
 
-import { Route, Switch, NavLink } from 'react-router-dom';
+import Home from './components/Home';
+
+const MovieDetails = lazy(()=>import('./components/Movies/MovieDetails' /* webpackChunkName: "MoviesDetails" */));
+
+const MoviesFinder = lazy(()=> import('./components/Movies/MoviesFinder' /* webpackChunkName: "MoviesFinder" */));
+
+
 // import Loader from "react-loader-spinner";
 
 // import s from './App.module.css'
 
 const App = () => (
   <>
+    <Router>
     <ul>
       <li>
         <NavLink
@@ -28,15 +36,15 @@ const App = () => (
         </NavLink>
       </li>
     </ul>
-    <Switch>
-      <Route exact to="/"  component=""/>
-      <Route to="/movies"  component=""/>
-      <Route to="/movies/:movieId"  component=""/>
-      <Route to="/movies/:movieId/cast"  component=""/>
-      <Route to="/movies/:movieId/reviews"  component=""/>
-      <Route component="{}"/>
-
-    </Switch>
+      <Suspense fallback={<h1>Loading...</h1>}>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route path="/movies/:movieId" render={props => <MovieDetails {...props} />}/>
+        <Route path="/movies"  render={props => <MoviesFinder {...props} /> } />            
+        
+        </Switch>
+        </Suspense>
+    </Router>
   </>
 
 )
